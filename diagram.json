@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "author": "Smart Classroom IoT",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "board-mfrc522",
+      "id": "rfid1",
+      "top": -280,
+      "left": -350,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-rfid-tag",
+      "id": "tag1",
+      "top": -120,
+      "left": -500,
+      "attrs": {
+        "tagId": "E97642A3"
+      }
+    },
+    {
+      "type": "wokwi-rfid-tag",
+      "id": "tag2",
+      "top": -40,
+      "left": -500,
+      "attrs": {
+        "tagId": "A1B2C3D4"
+      }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -280,
+      "left": 350,
+      "attrs": {
+        "pins": "i2c"
+      }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 280,
+      "left": 350,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "pir1",
+      "top": 280,
+      "left": -350,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 320,
+      "left": 0,
+      "attrs": {
+        "volume": "0.1"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": -320,
+      "left": 30,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX0",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX0",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "rfid1:SDA",
+      "esp:D5",
+      "green",
+      []
+    ],
+    [
+      "rfid1:SCK",
+      "esp:D18",
+      "orange",
+      []
+    ],
+    [
+      "rfid1:MOSI",
+      "esp:D23",
+      "blue",
+      []
+    ],
+    [
+      "rfid1:MISO",
+      "esp:D19",
+      "cyan",
+      []
+    ],
+    [
+      "rfid1:RST",
+      "esp:D4",
+      "purple",
+      []
+    ],
+    [
+      "rfid1:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "rfid1:3V3",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "lcd1:GND",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "lcd1:VCC",
+      "esp:VIN",
+      "red",
+      []
+    ],
+    [
+      "lcd1:SDA",
+      "esp:D21",
+      "green",
+      []
+    ],
+    [
+      "lcd1:SCL",
+      "esp:D22",
+      "blue",
+      []
+    ],
+    [
+      "dht1:GND",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "dht1:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "dht1:SDA",
+      "esp:D15",
+      "green",
+      []
+    ],
+    [
+      "pir1:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "pir1:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "pir1:OUT",
+      "esp:D27",
+      "orange",
+      []
+    ],
+    [
+      "bz1:1",
+      "esp:D26",
+      "purple",
+      []
+    ],
+    [
+      "bz1:2",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "pot1:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "pot1:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "pot1:SIG",
+      "esp:D34",
+      "gold",
+      []
+    ]
+  ]
+}

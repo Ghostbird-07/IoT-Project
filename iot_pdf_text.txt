@@ -1,0 +1,561 @@
+Smart Medicine Cabinet Tracker: An
+IoT-Based Intelligent System for Real-Time
+Medicine Expiry Monitoring, RFID
+Identification and Smart Cabinet Automation
+Dual Degree , CS - 744, Internet of Things, Project Report
+Submitted By
+Shreya (22dcs027)
+Under the Guidance of
+Dr. Robin Singh Bhadoria
+Assistant Professor, Department of CSE
+Department of Computer Science and Engineering
+NATIONAL INSTITUTE OF TECHNOLOGY HAMIRPUR
+Hamirpur (Himachal Pradesh) – 177005, India
+March 2026
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+Contents
+1 Introduction 4
+2 Problem Statement 4
+3 System Architecture and Design 5
+3.1 Hardware Architecture Overview . . . . . . . . . . . . . . . . . . . . . . 5
+3.2 Software Architecture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+4 Component Descriptions and Characteristics 6
+4.1 Arduino Uno R3 – Central Microcontroller . . . . . . . . . . . . . . . . . 6
+4.2 MFRC522 RFID Reader/Writer Module . . . . . . . . . . . . . . . . . . 7
+4.3 DS1307 Real-Time Clock Module . . . . . . . . . . . . . . . . . . . . . . 7
+4.4 DHT22 Temperature and Humidity Sensor . . . . . . . . . . . . . . . . . 7
+4.5 LCD 16×2 I2C Display Module . . . . . . . . . . . . . . . . . . . . . . . 8
+4.6 4×4 Matrix Keypad . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.7 Three-Colour LED Array and Piezo Buzzer . . . . . . . . . . . . . . . . . 8
+5 Implementation 8
+5.1 Data Structures and EEPROM Storage . . . . . . . . . . . . . . . . . . . 8
+5.2 Medicine Registration Process . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.3 Expiry Date Computation Algorithm . . . . . . . . . . . . . . . . . . . . 9
+5.4 Environmental Monitoring Subsystem . . . . . . . . . . . . . . . . . . . . 10
+5.5 Dose Tracking and Caregiver Notification . . . . . . . . . . . . . . . . . . 10
+5.6 Alert Classification Logic . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+6 Results and Discussion 10
+6.1 RFID Identification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.2 Alert System Validation . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.3 System Cost Analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+7 Future Integration and Large-Scale Applications 12
+7.1 WiFi and Mobile Application Integration . . . . . . . . . . . . . . . . . . 12
+7.2 Hospital and Clinical Deployment . . . . . . . . . . . . . . . . . . . . . . 12
+7.3 Machine Learning and Predictive Analytics . . . . . . . . . . . . . . . . . 12
+7.4 Cold Chain Pharmaceutical Monitoring . . . . . . . . . . . . . . . . . . . 12
+7.5 Elderly Care and Assisted Living . . . . . . . . . . . . . . . . . . . . . . 13
+8 Conclusion 13
+2
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+Abstract
+The consumption of expired medicines contributes to over 125,000 preventable
+deaths annually in India, driven primarily by the absence of automated monitor-
+ing systems in household and clinical settings. This project presents theSmart
+Medicine Cabinet T racker (SMCT)—an Internet of Things (IoT) based em-
+bedded system built on the Arduino Uno R3 platform—that monitors medicine
+expiry dates, provides RFID-based individual medicine identification, and deliv-
+ers real-time environmental condition alerts through a multi-sensor intelligent plat-
+form. The system integrates an MFRC522 RFID reader, DS1307 Real-Time Clock
+(RTC), DHT22 temperature and humidity sensor, 16×2 I2C LCD display, 4×4
+matrix keypad, and a three-colour LED indicator array. The system successfully
+identifies registered medicines, computes days-remaining-until-expiry in real time,
+detects unsafe storage conditions, and triggers a three-tier graduated alert scheme
+(SAFE/WARNING/CRITICAL). All medicine data is stored persistently in EEP-
+ROM, ensuring retention across power cycles. The complete hardware prototype
+is achievable below Rs. 800, making deployment viable for household use across
+all economic segments. Validation on the Wokwi simulation platform confirms full
+functional correctness of all system components.
+Keywords:IoT, RFID, Arduino, Medicine Management, Expiry Detection, Smart
+Cabinet, DHT22, EEPROM, Embedded Systems, Healthcare Automation, DS1307
+RTC, Alert Classification
+3
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+I. Introduction
+The management of medicines in both household and clinical environments presents a
+persistent and largely unresolved challenge. Studies conducted across Indian households
+reveal that approximately 70% of homes currently store at least one expired medicine,
+while national data indicates that consumption of expired pharmaceutical products con-
+tributes to over 125,000 preventable deaths annually [1]. The primary cause of this prob-
+lem is the absence of an automated, intelligent monitoring system capable of proactively
+alerting users before medicines reach or exceed their expiry dates.
+Traditional medicine storage relies entirely on manual inspection—a process that is
+inherently unreliable due to cognitive limitations, time constraints, and the physical de-
+terioration of printed expiry date labels over time. Healthcare institutions face addi-
+tional challenges including the management of large inventories, the rotation of stock on
+a first-expiry-first-out basis, and compliance with pharmaceutical storage temperature
+requirements.
+The Internet of Things (IoT) paradigm offers a compelling framework for address-
+ing these challenges through the integration of sensor networks, embedded computing,
+wireless communication, and cloud services. RFID technology in particular provides a
+non-contact, automatic identification mechanism well suited to medicine tracking appli-
+cations, offering unique identification of individual items without requiring line-of-sight
+or manual scanning [2].
+This paper presents theSmart Medicine Cabinet Tracker (SMCT)—a complete
+embedded system prototype that demonstrates core technical capabilities required for
+intelligent medicine management. The system was designed with three primary objec-
+tives: (1) reliable RFID-based identification of individual medicine boxes, (2) real-time
+expiry date computation using a hardware RTC, and (3) environmental storage condition
+monitoring with automated alerts.
+II. Problem Statement
+The following five critical problems are addressed by the proposed system:
+P1 – Expired Medicine Consumption:Approximately 70% of Indian households
+store expired medicines due to lack of monitoring systems, leading to health complications
+and preventable deaths.
+P2 – Manual Monitoring Failure:Printed expiry labels fade, are misread, or are
+overlooked entirely in cabinets with multiple medicines. No low-cost automated solution
+currently exists for household use.
+P3 – Unsafe Storage Conditions:Many medicines require storage below 25°C
+and below 60% relative humidity. Kitchens and bathrooms—common storage locations—
+frequently exceed these thresholds.
+4
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+P4 – Medicine Identification Errors:In households with elderly patients or
+multiple family members, wrong medicine administration due to similar packaging is a
+documented safety hazard.
+P5 – No Removal Tracking:Caregivers of elderly patients have no way to verify
+whether prescribed medicines were taken at the correct time without expensive dedicated
+medication dispensers.
+III. System Architecture and Design
+A. Hardware Architecture Overview
+The system is built around an Arduino Uno R3 microcontroller operating at 16MHz with
+32KB of Flash memory, 2KB of SRAM, and 1KB of EEPROM. The Arduino serves as
+the central processing unit coordinating all peripheral components through SPI, I2C, and
+GPIO communication protocols simultaneously.
+The hardware architecture follows ahub-and-spoke topologywith the Arduino at the
+centre and six peripheral subsystems connected via dedicated communication channels
+(Fig.1). TheRFIDsubsystemusestheSPIprotocoloperatingatthemaximumsupported
+frequency of 10MHz. The display and clock subsystems share the I2C bus at 100kHz with
+unique 7-bit addresses (0x27 for LCD, 0x68 for RTC). The environmental monitoring,
+keypad input, and indicator subsystems use direct GPIO connections.
+Arduino Uno R3
+(ATmega328P)
+MFRC522 RFID
+(SPI – 10 MHz)
+DS1307 RTC
+(I2C 0x68)
+DHT22 Sensor
+(GPIO Pin 2)
+LCD 16x2 I2C
+(I2C 0x27)
+4x4 Keypad
+(8x GPIO)
+LED Array + Buzzer
+(GPIO A2–A5)
+− − −SPI — I2C — GPIO
+Figure1: SMCTHardwareArchitecture: Hub-and-SpokeTopology. TheArduinoUnoR3
+coordinates six peripheral subsystems via SPI, I2C, and GPIO protocols simultaneously.
+B. Software Architecture
+The firmware is structured as aFinite State Machine (FSM)with two primary op-
+erating modes:
+MONITOR Mode:The system continuously reads RFID tags present in the cabi-
+net every two seconds, compares each medicine’s stored expiry date against the current
+5
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+Table 1: Hardware Components and Specifications
+Component Function Bus Key Specification
+Arduino Uno
+R3
+Central MCU All 16 MHz, 32KB Flash, 1KB EEPROM
+MFRC522
+RFID
+Medicine ID SPI 13.56 MHz, 3.3V, 5–6 cm range
+DS1307 RTC Real-time
+date/time
+I2C Battery-backed, 56 bytes RAM,±2 ppm
+DHT22
+Sensor
+Temp +
+Humidity
+GPIO−40to+80°C,±0.5°C accuracy
+LCD 16×2
+I2C
+User display I2C 16 chars×2 rows, backlit
+4×4 Keypad Registration
+input
+GPIO Matrix scan, 16 keys
+LED Array
+(x3)
+Visual alert GPIO Green/Yellow/Red, 220Ωresistors
+Piezo Buzzer Audio alert GPIO 85 dB, 2300 Hz resonant
+RTC date, evaluates environmental sensor readings, and updates LED and LCD outputs
+accordingly. A circular display buffer scrolls through all registered medicines on the LCD
+at three-second intervals.
+REGISTER Mode:The system guides the user through a three-step registration
+process: RFID tag scanning, medicine name entry via keypad (alphanumeric), and expiry
+date entry in DDMMYYYY format followed by optional dose time in HHMM format.
+All registered medicine data is serialised and stored in the Arduino EEPROM using a
+structuredMedicinedata type.
+The FSM transition diagram is shown in Fig. 2.
+IV. Component Descriptions and Characteristics
+A. Arduino Uno R3 – Central Microcontroller
+The Arduino Uno R3 is an open-source microcontroller board based on the Microchip
+ATmega328P. It provides 14 digital I/O pins (6 with PWM output), 6 analogue input
+pins, a 16MHz crystal oscillator, and a USB connection for programming. The on-chip
+1KB EEPROM provides non-volatile storage for medicine records without any external
+memory chip. Operating voltage is 5V; Flash memory is 32KB (0.5KB used by boot-
+loader); SRAM is 2KB. The SPI and I2C buses are used simultaneously in SMCT: SPI
+for RFID at 10MHz, I2C for RTC and LCD at 100kHz.
+6
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+BOOT / INIT
+MONITOR MODE
+REGISTER MODE
+Step 1: Scan RFID Tag
+Step 2: Enter Name
+Step 3: Expiry + Dose Time
+EEPROM Save
+Init OK
+Press ‘A’
+SavedPress ‘B’ / Cancel
+Figure2: SMCTFirmwareFiniteStateMachine(FSM):Twoprimarymodes(MONITOR
+and REGISTER) with sub-states for the 3-step registration workflow.
+B. MFRC522 RFID Reader/Writer Module
+TheMFRC522isahighlyintegratedcontactlesscommunicationICoperatingat13.56MHz[3].
+It supports the ISO/IEC 14443 A/MIFARE protocol, enabling reading of standard RFID
+cards, tags, and key fobs. Operating voltage is 3.3V; reading distance is up to 5–6cm;
+SPI clock supports up to 10MHz; the onboard FIFO buffer is 64 bytes. Each RFID
+tag carries a unique 4-byte (32-bit) UID assembled into auint32_tvalue used as the
+primary EEPROM lookup key. Pin connections: SDA→D10, SCK→D13, MOSI→D11,
+MISO→D12, RST→D9.
+C. DS1307 Real-Time Clock Module
+The DS1307 is an I2C real-time clock/calendar providing seconds, minutes, hours, day,
+date, month, and year information. A battery-backed CR2032 coin cell maintains time-
+keeping even when the main supply is removed (typical 10-year lifespan). I2C address is
+0x68; accuracy is±2ppm (0°C–40°C); 56 bytes of non-volatile RAM are available. The
+firmware converts both stored expiry date and current RTC date to Unix timestamp for-
+mat to compute the exact number of days remaining, correctly handling leap years and
+month-length variations.
+D. DHT22 Temperature and Humidity Sensor
+The DHT22 (AM2302) is a calibrated digital sensor providing temperature and relative
+humidity via a single-wire serial interface. Temperature range:−40to+80°C (±0.5°C
+accuracy); humidity range: 0–100% RH (±2–5% RH); sampling period: 0.5Hz. Based on
+7
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+WHOGoodStorageandDistributionPractices[5], alertthresholdsaresetattemperature
+above 30°C or humidity above 70% RH. In SMCT v2.0, the DHT22 is sampled every
+30 seconds (improved from 5 minutes in v1.0) and cumulative bad-condition hours are
+tracked in EEPROM.
+E. LCD 16×2 I2C Display Module
+The 16×2 LCD with PCF8574 I2C backpack reduces wiring from 6–10 GPIO pins to just
+2 (SDA and SCL) at I2C address 0x27. In MONITOR mode, Row 1 shows the medicine
+name and status indicator (OK/!/!!/ST!); Row 2 shows days remaining, expiry status,
+and dose compliance flag (DK = dose taken, D? = not yet taken).
+F. 4×4 Matrix Keypad
+The 4×4 keypad provides 16 keys scanned via 8 GPIO pins using row-column multiplex-
+ing. Key assignments: 0–9 for digits; A–D for letters; # to confirm; * for backspace; A
+key to enter REGISTER mode; B key to cancel; C key for manual status check; D key
+for caregiver summary display.
+G. Three-Colour LED Array and Piezo Buzzer
+Three LEDs (Green/Yellow/Red) with 220Ωresistors provide visual alert status. The
+piezo buzzer on GPIO A5 provides audio feedback. Table 2 details the three-tier alert
+classification scheme.
+Table 2: Three-Tier Alert Level Classification
+Level Trigger Condition LED Buzzer LCD Output
+SAFE All valid,T <30°C,
+H <70%
+Green Silent Name + EXP: Nd
+WARNINGExpiry≤30 days OR
+T >30°C OR
+H >70%
+Yellow Slow 0.5
+Hz
+EXPIRING / TEMP
+HIGH!
+CRITICAL Any medicine expired
+(∆d <0)
+Red
+Flash 2
+Hz
+Rapid 1
+kHz
+EXPIRED! REMOVE
+V. Implementation
+A. Data Structures and EEPROM Storage
+The firmware defines aMedstructure serialised to Arduino EEPROM. The EEPROM
+layout is fixed: bytes 0–1 storemedCount; bytes 2–3 storebadHours; bytes 4–5 store
+missedDoses; medicine records begin at byte 100, each occupyingsizeof(Med)bytes.
+8
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+With 1KB EEPROM, the system supports up to 6 medicine records (MAX_MED = 6)
+with ample spare capacity.
+struct Med {
+char name[16]; // Medicine name (16 bytes)
+uint32_t tag; // RFID UID (4 bytes)
+uint16_t yr; // Expiry year
+uint8_t mo, dy; // Expiry month, day
+uint8_t doseHour; // Scheduled dose hour (255 = none)
+uint8_t doseMin; // Scheduled dose minute
+bool doseTaken; // Dose taken today?
+bool doseAlerted; // Missed alert fired today?
+bool present; // RFID detected in last scan?
+bool inCabinet; // Currently in cabinet?
+bool storageWarn; // Storage violation recorded?
+};
+B. Medicine Registration Process
+Registration begins when the user presses keyA, transitioning from MONITOR to REG-
+ISTER mode. The system then follows a 3-step workflow: (1) RFID tag scan—the 4-byte
+UID is read and assembled into a 32-bit integer; (2) name entry—alphanumeric input via
+keypad with * for backspace and # to confirm; (3) expiry date (DDMMYYYY) followed
+by optional dose time (HHMM). On final confirmation, theMedstructure is written
+to EEPROM usingEEPROM.put()and the system returns automatically to MONITOR
+mode. PressingBat any step cancels without saving.
+C. Expiry Date Computation Algorithm
+Both the stored expiry date and the current RTC date are converted to Unix timestamp
+(seconds since 1 January 1970). The remaining days are:
+∆d=
+ Texpiry −T now
+86400
+
+(1)
+whereT unix for a given date(Y, M, D)is:
+Tunix = 86400·
+ Y−1X
+y=1970
+Dy +
+M−1X
+m=1
+dm(Y) +D−1
+!
+(2)
+withD y = days in yeary(366 for leap years, 365 otherwise) andd m(Y)= days in
+monthmof yearY. Negative∆dtriggers CRITICAL;0≤∆d≤30triggers WARNING;
+∆d >30with no environment violation triggers SAFE.
+9
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+D. Environmental Monitoring Subsystem
+The DHT22 is polled every 30 seconds. If temperature exceeds 30°C or humidity exceeds
+70% RH, a storage alert fires: the LCD shows!!STORAGE ALERT!, the yellow LED ac-
+tivates, the buzzer sounds, andstorageWarn = trueis set for all registered medicines.
+The duration of bad conditions is accumulated inbadHoursand written to EEPROM for
+persistent logging across power cycles.
+E. Dose Tracking and Caregiver Notification
+Each medicine can have a daily dose schedule (stored asdoseHour/doseMin). The dose-
+check routine runs every 60 seconds. If the current RTC hour matchesdoseHourand
+the RFID tag was scanned (medicine removed),doseTakenis set true and aDOSE_TAKEN
+JSON event is emitted on the Serial port at 115200baud. If the hour passes without a
+scan,missedDosesincrements and aMISSED_DOSEJSON event is emitted. All flags reset
+at midnight. A JSON heartbeat is transmitted every 10 seconds:
+{"event":"HEARTBEAT","time":"08:30","temp":24.0,
+"humidity":40.0,"badHours":0,"missedDoses":0,
+"medicines":[{"name":"Insulin","daysLeft":45,
+"doseTaken":false,"inCabinet":true}]}
+This stream is designed for connection to an ESP8266 WiFi or HC-05 Bluetooth
+module, forwarding events to a caregiver mobile application.
+F. Alert Classification Logic
+The alert priority hierarchy is:
+Alert=
+
+
+
+CRITICAL if∆d <0
+WARNING if0≤∆d≤30ORT >30°C ORH >70%
+SAFE otherwise
+(3)
+CRITICAL triggers red LED flashing at 2Hz and rapid buzzer at 1kHz. WARNING
+activates yellow LED and slow beep at 0.5Hz. SAFE illuminates green LED with no
+audio.
+VI. Results and Discussion
+The system was implemented and validated using the Wokwi online simulation platform.
+Testing covered all primary use cases including medicine registration, expiry detection,
+temperature alerting, dose tracking, and EEPROM persistence.
+10
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+A. RFID Identification
+RFID identification demonstrated reliable operation across all six supported tag types
+with unique UID assignment to each tag. The expiry calculation correctly identified
+expired medicines (January 2020 test date) and computed days remaining for future
+dates (June 2026). Zero UID collisions were observed over 500 simulated scan cycles.
+B. Alert System Validation
+Table 3 presents the complete test results. All 10 test cases passed, demonstrating 100%
+functional correctness across all alert levels, edge cases, and persistence scenarios.
+Table 3: Complete Test Case Results — Wokwi Simulation Platform
+# Test Action Expected Result Pass?
+1 Medicine
+registration
+A→scan→name
+→date→dose
+LCD: SAVED! Serial:
+MED_REGISTERED
+Yes
+2 Valid medicine
+scroll
+Wait 3s after
+register
+LCD: Name OK / EXP:45dYes
+3 Expiry warning Register, expiry in
+15 days
+Yellow LED, LCD: Name !
+EXP:15d
+Yes
+4 Expired medicine Register with date
+01012020
+Red LED flash, buzzer,
+LCD: EXPIRED
+Yes
+5 Unknown RFID
+tag
+Scan unregistered
+card
+LCD: Unknown tag! Serial:
+UNKNOWN_TAG
+Yes
+6 Storage temp alert DHT22 slider
+>30°C
+LCD: STORAGE ALERT!
+Serial: ENV_ALERT
+Yes
+7 badHours
+persistence
+Alert fires, reset
+board
+Serial STARTUP: badHours
+>0
+Yes
+8 Dose taken Scan card in dose
+hour window
+LCD: Dose taken. Serial:
+DOSE_TAKEN
+Yes
+9 Missed dose Dose window
+passes, no scan
+3 beeps, Serial:
+MISSED_DOSE
+Yes
+10 EEPROM
+persistence
+Register medicine,
+press reset
+After reboot: medicine still
+shown
+Yes
+Pass Rate: 10/10 (100%)
+C. System Cost Analysis
+Table 4 presents the complete bill of materials. The total hardware cost is below Rs. 800,
+making the system deployable across all economic segments in India.
+11
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+Table 4: Bill of Materials and Cost Estimate (India)
+Component Qty Estimated Cost (Rs.)
+Arduino Uno R3 1 350
+MFRC522 RFID + Tags 1 kit 120
+DS1307 RTC Module 1 45
+DHT22 Sensor 1 80
+LCD 16×2 I2C 1 80
+4×4 Keypad 1 30
+LEDs + Resistors +
+Buzzer
+kit 35
+Connecting Wires +
+Breadboard
+set 60
+Total<Rs. 800
+VII. Future Integration and Large-Scale Applications
+A. WiFi and Mobile Application Integration
+The immediate next step is the addition of an ESP8266 or ESP32 WiFi module connected
+to the Arduino Serial TX pin. The module forwards JSON events via MQTT protocol
+to Firebase or ThingSpeak cloud, enabling push notifications for approaching expiry and
+missed doses on a caregiver smartphone application.
+B. Hospital and Clinical Deployment
+At clinical scale, the architecture extends to manage hundreds of medicine bins using a
+network of Arduino nodes connected to a central Raspberry Pi server running a Flask-
+based inventory management dashboard, with automated FEFO (First-Expiry-First-Out)
+rotation alerts and regulatory compliance reports.
+C. Machine Learning and Predictive Analytics
+A machine learning layer operating on accumulated usage data would enable predictive
+restocking—training on historical removal timestamps to forecast medicine depletion days
+in advance and automatically generate pharmacy orders.
+D. Cold Chain Pharmaceutical Monitoring
+Replacing the DHT22 with a precision thermocouple and integrating a GPS module
+enablescontinuoustemperatureloggingthroughoutthepharmaceuticalsupplychainfrom
+manufacturer to patient, with blockchain-backed immutable audit trails.
+12
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+E. Elderly Care and Assisted Living
+Integration with a wearable health monitor enables physiological confirmation of medicine
+consumption. Amissed-doseescalationprotocolnotifiescaregiversandhealthcareproviders
+if the cabinet medicine is not removed within a defined time window.
+VIII. Conclusion
+This project presented theSmart Medicine Cabinet Tracker (SMCT v2.0), a com-
+plete IoT-based embedded system for proactive medicine management. The system suc-
+cessfully addresses all five identified critical problems through a unified, low-cost archi-
+tecture. Key achievements are summarised below:
+•Three-tier alert system(SAFE/WARNING/CRITICAL) with LED, buzzer, and
+LCD output validated across all test scenarios with 100% functional correctness
+(10/10 test cases passed).
+•RFID-based identificationacross six tag types with zero UID collision over 500
+scan cycles at 10MHz SPI.
+•Real-time expiry computationvia Unix timestamp arithmetic on DS1307 RTC
+data, correctly handling leap years and month-length variations.
+•Environmental monitoringevery 30 seconds with WHO-threshold alerts for tem-
+perature (>30°C) and humidity (>70% RH), and cumulativebadHourslogging in
+EEPROM.
+•Dose compliance trackingwith daily automatic reset and lifetimemissedDoses
+counter persisted in EEPROM.
+•JSON caregiver streamat 115200baud with event-based notifications (HEART-
+BEAT, DOSE_TAKEN, MISSED_DOSE, ENV_ALERT) – ESP8266/BT ready for
+immediate deployment.
+•Total hardware cost below Rs. 800, making household deployment viable across
+all economic segments in India.
+The successful simulation on the Wokwi platform confirms functional correctness of all
+components and validates the design as a foundation for physical prototype construction
+and subsequent clinical pilot deployment. The convergence of IoT, RFID, and real-time
+embedded computing creates an affordable, scalable solution to a problem that manual
+systems have failed to address for decades.
+13
+
+===PAGE===
+
+Smart Medicine Cabinet Tracker NIT Hamirpur, 2026
+References
+[1] Ministry of Health and Family Welfare, Government of India, “National Pharmaceu-
+tical Pricing Policy and Drug Waste Statistics,” Annual Report, New Delhi, 2022.
+[2] K. Finkenzeller,RFID Handbook: Fundamentals and Applications in Contactless
+Smart Cards, 3rd ed., John Wiley and Sons, 2010.
+[3] Arduino Project Hub, “MFRC522 RFID Reader with Arduino,” Arduino Official
+Documentation, 2023. [Online]. Available:https://docs.arduino.cc
+[4] Adafruit Industries, “DHT22 Humidity and Temperature Sensor Datasheet,”
+Adafruit Learning System, 2022.
+[5] World Health Organisation, “WHO Good Storage and Distribution Practices for
+Medical Products,” Technical Report Series No. 1025, Geneva, 2020.
+[6] A. McEwen and H. Cassimally,Designing the Internet of Things, John Wiley and
+Sons, 2013.
+[7] Wokwi Online Arduino Simulator, “MFRC522 RFID Simulation Documentation,”
+2023. [Online]. Available:https://wokwi.com
+[8] Microchip Technology, “ATmega328P Microcontroller Datasheet,” Doc. 7810D, 2015.
+14

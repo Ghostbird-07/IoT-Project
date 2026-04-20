@@ -1,0 +1,15 @@
+# PlatformIO build artifacts
+.pio/
+
+# LaTeX compilation artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS files
+Thumbs.db
+.DS_Store
